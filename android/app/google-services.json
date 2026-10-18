@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "196043232101",
+    "project_id": "trackpense-c4ca0",
+    "storage_bucket": "trackpense-c4ca0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196043232101:android:b78609388a24ab16b1078c",
+        "android_client_info": {
+          "package_name": "com.example.trackpense"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1iE7c2eyF2R2AA--lIRl16BCzFtNwf-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
