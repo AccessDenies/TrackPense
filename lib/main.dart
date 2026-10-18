@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,6 +56,7 @@ class AuthGate extends StatelessWidget {
   }
 }
 
+// ==================== WELCOME PAGE ====================
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
@@ -108,27 +108,25 @@ class WelcomePage extends StatelessWidget {
                     },
                     child: const Text(
                       'Get Started',
-                      // WelcomePage ke andar Column ke last mein ye add kar dein:
-const SizedBox(height: 12),
-SizedBox(
-  width: double.infinity,
-  height: 52,
-  child: OutlinedButton(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const LoginPage(),
-        ),
-      );
-    },
-    child: const Text(
-      'I already have an account',
-      style: TextStyle(fontSize: 17),
-    ),
-  ),
-),
-                      
+                      style: TextStyle(fontSize: 17),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'I already have an account',
                       style: TextStyle(fontSize: 17),
                     ),
                   ),
@@ -142,6 +140,7 @@ SizedBox(
   }
 }
 
+// ==================== SIGNUP PAGE ====================
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -187,14 +186,8 @@ class _SignupPageState extends State<SignupPage> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(
-    builder: (_) => const DashboardPage(),
-  ),
-);
+      Navigator.popUntil(context, (route) => route.isFirst);
 
-      // Next step: open the app dashboard here.
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
@@ -297,9 +290,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   validator: (value) {
                     final email = value?.trim() ?? '';
-                    if (!RegExp(
-                      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                    ).hasMatch(email)) {
+                    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
                       return 'Please enter a valid email.';
                     }
                     return null;
@@ -319,9 +310,7 @@ class _SignupPageState extends State<SignupPage> {
                         setState(() => _hidePassword = !_hidePassword);
                       },
                       icon: Icon(
-                        _hidePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _hidePassword ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
                   ),
@@ -343,14 +332,11 @@ class _SignupPageState extends State<SignupPage> {
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(
-                          () => _hideConfirmPassword =
-                              !_hideConfirmPassword,
+                          () => _hideConfirmPassword = !_hideConfirmPassword,
                         );
                       },
                       icon: Icon(
-                        _hideConfirmPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _hideConfirmPassword ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
                   ),
@@ -370,40 +356,37 @@ class _SignupPageState extends State<SignupPage> {
                         ? const SizedBox(
                             height: 22,
                             width: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text(
                             'Create Account',
                             style: TextStyle(fontSize: 16),
                           ),
-                    const SizedBox(height: 16),
-Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    const Text('Already have an account? '),
-    GestureDetector(
-      onTap: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const LoginPage(),
-          ),
-        );
-      },
-      child: const Text(
-        'Log In',
-        style: TextStyle(
-          color: Colors.teal,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-  ],
-),
-                    
                   ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Already have an account? '),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LoginPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Log In',
+                        style: TextStyle(
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -414,6 +397,7 @@ Row(
   }
 }
 
+// ==================== LOGIN PAGE ====================
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -448,9 +432,6 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (!mounted) return;
-
-      // AuthGate khud hi detect karke Dashboard par le jayega, 
-      // toh hum saare previous routes pop karke root par ja sakte hain
       Navigator.popUntil(context, (route) => route.isFirst);
 
     } on FirebaseAuthException catch (e) {
@@ -623,6 +604,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
+// ==================== DASHBOARD PAGE ====================
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -756,7 +738,6 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         const SizedBox(height: 24),
 
-        // Monthly spending card
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
@@ -836,7 +817,6 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         const SizedBox(height: 22),
 
-        // Income and net balance
         Row(
           children: [
             Expanded(
@@ -862,7 +842,6 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         const SizedBox(height: 22),
 
-        // Empty state
         Container(
           padding: const EdgeInsets.fromLTRB(20, 36, 20, 32),
           decoration: BoxDecoration(
