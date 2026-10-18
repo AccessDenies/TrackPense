@@ -140,11 +140,12 @@ class _SignupPageState extends State<SignupPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-        ),
-      );
+      Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (_) => const DashboardPage(),
+  ),
+);
 
       // Next step: open the app dashboard here.
     } on FirebaseAuthException catch (e) {
@@ -335,6 +336,391 @@ class _SignupPageState extends State<SignupPage> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int _selectedIndex = 0;
+
+  static const bg = Color(0xFF0B1020);
+  static const panel = Color(0xFF171F35);
+  static const green = Color(0xFF10B981);
+  static const muted = Color(0xFF94A3B8);
+
+  void _comingSoon(String feature) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$feature feature next banayenge!')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final name = user?.displayName ?? 'User';
+
+    final pages = [
+      _homePage(name),
+      _placeholderPage(Icons.receipt_long, 'Transactions',
+          'Your income and expenses will appear here.'),
+      _placeholderPage(Icons.pie_chart_outline, 'Analytics',
+          'Your spending charts will appear here.'),
+      _placeholderPage(Icons.settings_outlined, 'Settings',
+          'Manage your TrackPense account here.'),
+    ];
+
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: _selectedIndex == 0
+          ? null
+          : AppBar(
+              backgroundColor: bg,
+              foregroundColor: Colors.white,
+              title: Text(
+                ['Home', 'Transactions', 'Analytics', 'Settings']
+                    [_selectedIndex],
+              ),
+            ),
+      body: SafeArea(child: pages[_selectedIndex]),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _comingSoon('Add transaction'),
+        backgroundColor: green,
+        foregroundColor: Colors.white,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, size: 34),
+      ),
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: panel,
+        indicatorColor: green.withValues(alpha: 0.16),
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            label: 'Transactions',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.pie_chart_outline),
+            label: 'Analytics',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _homePage(String name) {
+    final now = DateTime.now();
+    const weekdays = [
+      'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+      'Friday', 'Saturday', 'Sunday'
+    ];
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(22, 12, 22, 90),
+      children: [
+        Text(
+          '${weekdays[now.weekday - 1]}, ${now.day} ${months[now.month - 1]}',
+          style: const TextStyle(color: muted, fontSize: 16),
+        ),
+        const SizedBox(height: 3),
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'TrackPense',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1,
+                ),
+              ),
+            ),
+            CircleAvatar(
+              radius: 29,
+              backgroundColor: panel,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Colors.white,
+                ),
+                onPressed: () => setState(() => _selectedIndex = 3),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+
+        // Monthly spending card
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF063E32),
+                Color(0xFF071927),
+                Color(0xFF10182A),
+              ],
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Spent this month',
+                  style: TextStyle(color: muted, fontSize: 16)),
+              const SizedBox(height: 4),
+              const Text(
+                '₹0',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 46,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 22),
+              const Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Today', style: TextStyle(color: muted)),
+                        SizedBox(height: 3),
+                        Text('₹0',
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 22)),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('Budget left',
+                          style: TextStyle(color: muted)),
+                      SizedBox(height: 3),
+                      Text('Not set',
+                          style: TextStyle(
+                              color: Colors.white, fontSize: 20)),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              InkWell(
+                onTap: () => _comingSoon('Monthly budget'),
+                child: const Row(
+                  children: [
+                    Icon(Icons.add_circle_outline, color: green),
+                    SizedBox(width: 9),
+                    Text(
+                      'Set a monthly budget',
+                      style: TextStyle(
+                        color: green,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 22),
+
+        // Income and net balance
+        Row(
+          children: [
+            Expanded(
+              child: _statCard(
+                Icons.arrow_downward,
+                'Income',
+                '₹0',
+                const Color(0xFF065F46),
+                green,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: _statCard(
+                Icons.arrow_upward,
+                'Net balance',
+                '₹0',
+                const Color(0xFF451820),
+                const Color(0xFFF87171),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 22),
+
+        // Empty state
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 36, 20, 32),
+          decoration: BoxDecoration(
+            color: panel,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: const Color(0xFF222C43)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF075742),
+                ),
+                child: const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  size: 48,
+                  color: Color(0xFFB7F7D9),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Start tracking your money',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Add your first expense or income and '
+                'TrackPense will build your charts and '
+                'insights automatically.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: muted,
+                  fontSize: 16,
+                  height: 1.45,
+                ),
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: () => _comingSoon('Add transaction'),
+                icon: const Icon(Icons.add),
+                label: const Text('Add transaction'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 18,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Welcome, $name!',
+          style: const TextStyle(color: muted),
+        ),
+      ],
+    );
+  }
+
+  Widget _statCard(
+    IconData icon,
+    String title,
+    String amount,
+    Color iconBg,
+    Color iconColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: panel,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: const Color(0xFF222C43)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 23,
+            backgroundColor: iconBg,
+            child: Icon(icon, color: iconColor, size: 25),
+          ),
+          const SizedBox(height: 15),
+          Text(title, style: const TextStyle(color: muted)),
+          const SizedBox(height: 5),
+          Text(
+            amount,
+            style: TextStyle(
+              color: title == 'Income' ? green : Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _placeholderPage(
+    IconData icon,
+    String title,
+    String message,
+  ) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 70, color: green),
+            const SizedBox(height: 18),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: muted, fontSize: 16),
+            ),
+          ],
         ),
       ),
     );
