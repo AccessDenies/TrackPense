@@ -654,13 +654,21 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
       body: SafeArea(child: pages[_selectedIndex]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _comingSoon('Add transaction'),
+            floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const AddTransactionPage(),
+            ),
+          );
+        },
         backgroundColor: green,
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 34),
       ),
+
       bottomNavigationBar: NavigationBar(
         backgroundColor: panel,
         indicatorColor: green.withValues(alpha: 0.16),
@@ -980,6 +988,345 @@ class _DashboardPageState extends State<DashboardPage> {
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(color: muted, fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddTransactionPage extends StatefulWidget {
+  const AddTransactionPage({super.key});
+
+  @override
+  State<AddTransactionPage> createState() => _AddTransactionPageState();
+}
+
+class _AddTransactionPageState extends State<AddTransactionPage> {
+  bool _isExpense = true;
+  String _selectedCategory = 'Food';
+  String _selectedPaymentMethod = 'Cash';
+  
+  final _amountController = TextEditingController();
+  final _merchantController = TextEditingController();
+  final _noteController = TextEditingController();
+
+  static const bg = Color(0xFF0B1020);
+  static const panel = Color(0xFF171F35);
+  static const green = Color(0xFF10B981);
+  static const muted = Color(0xFF94A3B8);
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _merchantController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: bg,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Add transaction',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Expense / Income Toggle Switch
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: panel,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _isExpense = true),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: _isExpense ? bg : Colors.transparent,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Text(
+                          'Expense',
+                          style: TextStyle(
+                            color: _isExpense ? Colors.white : muted,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _isExpense = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: !_isExpense ? bg : Colors.transparent,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Text(
+                          'Income',
+                          style: TextStyle(
+                            color: !_isExpense ? Colors.white : muted,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 2. Amount Input Section
+            const Text('Amount', style: TextStyle(color: muted, fontSize: 14)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: panel,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF222C43)),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    '₹',
+                    style: TextStyle(color: green, fontSize: 32, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _amountController,
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                      decoration: const InputDecoration(
+                        hintText: '0',
+                        hintStyle: TextStyle(color: muted),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 3. Category Section
+            const Text('Category', style: TextStyle(color: muted, fontSize: 14)),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _categoryItem(Icons.fastfood, 'Food'),
+                _categoryItem(Icons.directions_car, 'Transport'),
+                _categoryItem(Icons.shopping_bag, 'Shopping'),
+                _categoryItem(Icons.school, 'Education'),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // 4. Date & Time Picker Mock
+            const Text('Date & time', style: TextStyle(color: muted, fontSize: 14)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                color: panel,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF222C43)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.between,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, color: muted, size: 20),
+                      SizedBox(width: 12),
+                      Text('Today, 8:20 PM', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ],
+                  ),
+                  Icon(Icons.keyboard_arrow_down, color: muted),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 5. Payment Method Section
+            const Text('Payment method', style: TextStyle(color: muted, fontSize: 14)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _paymentChip('Cash', Icons.wallet),
+                _paymentChip('UPI', Icons.phone_android),
+                _paymentChip('Card', Icons.credit_card),
+                _paymentChip('Bank Transfer', Icons.account_balance),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // 6. Merchant / Shop Optional
+            const Text('Merchant / shop (optional)', style: TextStyle(color: muted, fontSize: 14)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _merchantController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'e.g. Swiggy, Big Bazaar',
+                hintStyle: const TextStyle(color: muted),
+                filled: true,
+                fillColor: panel,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFF222C43)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFF222C43)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // 7. Note Optional
+            const Text('Note (optional)', style: TextStyle(color: muted, fontSize: 14)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _noteController,
+              maxLines: 3,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Add a short note',
+                hintStyle: const TextStyle(color: muted),
+                filled: true,
+                fillColor: panel,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFF222C43)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFF222C43)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // 8. Save Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: FilledButton.icon(
+                onPressed: () {
+                  // Save logic yahan likhein
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.check),
+                label: Text(
+                  _isExpense ? 'Save expense' : 'Save income',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: green,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for Category Icons
+  Widget _categoryItem(IconData icon, String name) {
+    bool isSelected = _selectedCategory == name;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedCategory = name),
+      child: Container(
+        width: 75,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: panel,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? green : const Color(0xFF222C43),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: isSelected ? green : Colors.white, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              name,
+              style: TextStyle(
+                color: isSelected ? Colors.white : muted,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for Payment Chips
+  Widget _paymentChip(String name, IconData icon) {
+    bool isSelected = _selectedPaymentMethod == name;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedPaymentMethod = name),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: panel,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? green : const Color(0xFF222C43),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: isSelected ? green : muted, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              name,
+              style: TextStyle(
+                color: isSelected ? Colors.white : muted,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           ],
         ),
