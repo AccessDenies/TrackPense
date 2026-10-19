@@ -1160,18 +1160,18 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 border: Border.all(color: const Color(0xFF222C43)),
               ),
               child: const Row(
-                mainAxisAlignment: MainAxisAlignment.between,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today, color: muted, size: 20),
-                      SizedBox(width: 12),
-                      Text('Today, 8:20 PM', style: TextStyle(color: Colors.white, fontSize: 16)),
-                    ],
-                  ),
-                  Icon(Icons.keyboard_arrow_down, color: muted),
-                ],
-              ),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+  children: [
+    Row(
+      children: [
+        Icon(Icons.calendar_today, color: muted, size: 20),
+        SizedBox(width: 12),
+        Text('Today, 8:20 PM', style: TextStyle(color: Colors.white, fontSize: 16)),
+      ],
+    ),
+    Icon(Icons.keyboard_arrow_down, color: muted),
+  ],
+)
             ),
             const SizedBox(height: 24),
 
