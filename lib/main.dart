@@ -739,7 +739,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   Icons.account_balance_wallet_outlined,
                   color: Colors.white,
                 ),
-                onPressed: () => setState(() => _selectedIndex = 3),
+                onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const BudgetPage(),
               ),
             ),
           ],
@@ -1351,6 +1355,174 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               style: TextStyle(
                 color: isSelected ? Colors.white : muted,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BudgetPage extends StatelessWidget {
+  const BudgetPage({super.key});
+
+  static const bg = Color(0xFF0B1020);
+  static const panel = Color(0xFF171F35);
+  static const green = Color(0xFF10B981);
+  static const muted = Color(0xFF94A3B8);
+
+  @override
+  Widget build(BuildContext context) {
+    final categories = [
+      {'name': 'Food', 'icon': Icons.fastfood, 'color': Colors.orange},
+      {'name': 'Transport', 'icon': Icons.directions_car, 'color': Colors.blue},
+      {'name': 'Shopping', 'icon': Icons.shopping_bag, 'color': Colors.pink},
+      {'name': 'Education', 'icon': Icons.school, 'color': Colors.purple},
+      {'name': 'Bills', 'icon': Icons.receipt, 'color': Colors.amber},
+      {'name': 'Entertainment', 'icon': Icons.movie, 'color': Colors.red},
+      {'name': 'Health', 'icon': Icons.local_hospital, 'color': Colors.teal},
+      {'name': 'Travel', 'icon': Icons.flight, 'color': Colors.lightBlue},
+      {'name': 'Other', 'icon': Icons.more_horiz, 'color': Colors.grey},
+    ];
+
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: bg,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Budgets',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Monthly Budget Card
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: panel,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF222C43)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Monthly budget',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Set budget action
+                        },
+                        child: const Text(
+                          'Set budget',
+                          style: TextStyle(
+                            color: green,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Spent ₹0 this month. Set a budget to track how much you have left.',
+                    style: TextStyle(color: muted, fontSize: 14, height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Category Budgets Title
+            const Text(
+              'Category budgets',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Category List Container
+            Container(
+              decoration: BoxDecoration(
+                color: panel,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF222C43)),
+              ),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: categories.length,
+                separatorBuilder: (context, index) => const Divider(
+                  color: Color(0xFF222C43),
+                  height: 1,
+                  indent: 70,
+                ),
+                itemBuilder: (context, index) {
+                  final cat = categories[index];
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: (cat['color'] as Color).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        cat['icon'] as IconData,
+                        color: cat['color'] as Color,
+                        size: 22,
+                      ),
+                    ),
+                    title: Text(
+                      cat['name'] as String,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          '₹0 • No limit',
+                          style: TextStyle(color: muted, fontSize: 14),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.chevron_right, color: muted),
+                      ],
+                    ),
+                    onTap: () {
+                      // Category item click action
+                    },
+                  );
+                },
               ),
             ),
           ],
