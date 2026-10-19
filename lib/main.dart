@@ -1009,7 +1009,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   String _selectedPaymentMethod = 'Cash';
   
   final _amountController = TextEditingController();
-  final _merchantController = TextEditingController();
+  final _sourceMerchantController = TextEditingController();
   final _noteController = TextEditingController();
 
   static const bg = Color(0xFF0B1020);
@@ -1020,13 +1020,27 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   void dispose() {
     _amountController.dispose();
-    _merchantController.dispose();
+    _sourceMerchantController.dispose();
     _noteController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Categories tab ke mutabiq change hongi
+    final categories = _isExpense
+        ? [
+            {'icon': Icons.fastfood, 'name': 'Food'},
+            {'icon': Icons.directions_car, 'name': 'Transport'},
+            {'icon': Icons.shopping_bag, 'name': 'Shopping'},
+            {'icon': Icons.school, 'name': 'Education'},
+          ]
+        : [
+            {'icon': Icons.work_outline, 'name': 'Salary'},
+            {'icon': Icons.laptop_mac, 'name': 'Freelance'},
+            {'icon': Icons.more_horiz, 'name': 'Other'},
+          ];
+
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
@@ -1058,7 +1072,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _isExpense = true),
+                      onTap: () {
+                        setState(() {
+                          _isExpense = true;
+                          _selectedCategory = 'Food'; // Reset category
+                        });
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         alignment: Alignment.center,
@@ -1078,7 +1097,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _isExpense = false),
+                      onTap: () {
+                        setState(() {
+                          _isExpense = false;
+                          _selectedCategory = 'Salary'; // Reset category
+                        });
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         alignment: Alignment.center,
@@ -1135,17 +1159,17 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             ),
             const SizedBox(height: 24),
 
-            // 3. Category Section
+            // 3. Category Section (Dynamic based on Expense/Income)
             const Text('Category', style: TextStyle(color: muted, fontSize: 14)),
             const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _categoryItem(Icons.fastfood, 'Food'),
-                _categoryItem(Icons.directions_car, 'Transport'),
-                _categoryItem(Icons.shopping_bag, 'Shopping'),
-                _categoryItem(Icons.school, 'Education'),
-              ],
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: categories.map((cat) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: _categoryItem(cat['icon'] as IconData, cat['name'] as String),
+                );
+              }).toList(),
             ),
             const SizedBox(height: 24),
 
@@ -1160,18 +1184,18 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 border: Border.all(color: const Color(0xFF222C43)),
               ),
               child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-  children: [
-    Row(
-      children: [
-        Icon(Icons.calendar_today, color: muted, size: 20),
-        SizedBox(width: 12),
-        Text('Today, 8:20 PM', style: TextStyle(color: Colors.white, fontSize: 16)),
-      ],
-    ),
-    Icon(Icons.keyboard_arrow_down, color: muted),
-  ],
-)
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, color: muted, size: 20),
+                      SizedBox(width: 12),
+                      Text('Today, 8:20 PM', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ],
+                  ),
+                  Icon(Icons.keyboard_arrow_down, color: muted),
+                ],
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -1190,14 +1214,17 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             ),
             const SizedBox(height: 24),
 
-            // 6. Merchant / Shop Optional
-            const Text('Merchant / shop (optional)', style: TextStyle(color: muted, fontSize: 14)),
+            // 6. Source / Merchant Field (Dynamic Label & Hint)
+            Text(
+              _isExpense ? 'Merchant / shop (optional)' : 'Source (optional)',
+              style: const TextStyle(color: muted, fontSize: 14),
+            ),
             const SizedBox(height: 8),
             TextField(
-              controller: _merchantController,
+              controller: _sourceMerchantController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'e.g. Swiggy, Big Bazaar',
+                hintText: _isExpense ? 'e.g. Swiggy, Big Bazaar' : 'e.g. Acme Corp',
                 hintStyle: const TextStyle(color: muted),
                 filled: true,
                 fillColor: panel,
@@ -1237,13 +1264,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             ),
             const SizedBox(height: 32),
 
-            // 8. Save Button
+            // 8. Save Button (Dynamic text)
             SizedBox(
               width: double.infinity,
               height: 56,
               child: FilledButton.icon(
                 onPressed: () {
-                  // Save logic yahan likhein
+                  // Yahan data save karne ka logic aayega
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.check),
@@ -1267,13 +1294,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     );
   }
 
-  // Helper widget for Category Icons
   Widget _categoryItem(IconData icon, String name) {
     bool isSelected = _selectedCategory == name;
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = name),
       child: Container(
-        width: 75,
+        width: 85,
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: panel,
@@ -1301,7 +1327,6 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     );
   }
 
-  // Helper widget for Payment Chips
   Widget _paymentChip(String name, IconData icon) {
     bool isSelected = _selectedPaymentMethod == name;
     return GestureDetector(
