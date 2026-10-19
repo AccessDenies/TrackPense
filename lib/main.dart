@@ -731,7 +731,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             ),
-            CircleAvatar(
+                        CircleAvatar(
               radius: 29,
               backgroundColor: panel,
               child: IconButton(
@@ -740,14 +740,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   color: Colors.white,
                 ),
                 onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const BudgetPage(),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const BudgetPage(),
+                    ),
+                  );
+                },
               ),
             ),
           ],
         ),
+
         const SizedBox(height: 24),
 
         Container(
